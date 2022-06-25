@@ -7,9 +7,14 @@ import dill
 import json
 
 
-def predict():
+def open_model():
     with open(os.path.expanduser('~/cat_price_predict/data/models/model.pkl'), 'rb') as file:
         model = dill.load(file)
+    return model
+
+
+def prediction(m):
+    model = m
     l = os.listdir((os.path.expanduser('~/cat_price_predict/data/test')))
     result = []
     id = []
@@ -23,8 +28,13 @@ def predict():
         result.append(y[0])
         id.append(form['id'])
         price.append(form['price'])
+    return [id, price, result]
 
-    df = pd.DataFrame({'id': id, 'price': price, 'result': result})
+
+def predict():
+    model = open_model()
+    l = prediction(model)
+    df = pd.DataFrame({'id': l[0], 'price': l[1], 'result': l[2]})
     df.to_csv(os.path.expanduser('~/cat_price_predict/data/predictions/predict.csv'))
 
 
